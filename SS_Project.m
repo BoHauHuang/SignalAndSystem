@@ -5,7 +5,7 @@ gx = 0;
 gy = 0;
 gz = 0;
 j = 1;
-trigger = -1
+trigger = -1;
 fopen(scom);
 fprintf(scom,'a')
 c1 = clock;
@@ -73,7 +73,27 @@ gzf = abs(gzf);
 %  plot(gzp(2:end));
 %  hold off;
 
+% classify
+modelfile = '1_9_93up.h5';
+classnames = {'9','8','7','6','5','4','3','2','1'};
+net = importKerasNetwork(modelfile,'ClassNames',classnames);
 
-signal = [gxf(2:end)',gxp(2:end)',gyf(2:end)',gyp(2:end)',gzf(2:end)',gzp(2:end)'];
-csvwrite(strcat('5/5_',int2str(count),'.csv'), signal);
-count = count + 1;
+data = zeros(1,510,6,1);
+
+signal = [gxf(3:end)',gxp(3:end)',gyf(3:end)',gyp(3:end)',gzf(3:end)',gzp(3:end)'];
+
+data(1:509,1:6,1) = signal(1:509,1:6);
+
+input = [1,509,6,1];
+label = classify(net,signal);
+
+disp(['Result: ', char(label)]);
+% csvwrite(strcat('dot/dot_',int2str(count),'.csv'), signal);
+% count = count + 1;
+% 
+% signal = [gxf(3:256)',gxp(3:256)',gyf(3:256)',gyp(3:256)',gzf(3:256)',gzp(3:256)'];
+% this_data = zeros(254,6,1,1);
+% this_data(:, :, 1, 1) = signal(:, :);
+% otest = predict(net_result, this_data);
+% [b, out] = max(otest);
+% disp(['Result: ', int2str(out)]);
